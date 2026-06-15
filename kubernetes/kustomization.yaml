@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
   - namespace.yaml
+  - storageclass-ebs-csi.yaml
   - pacman-configmap.yaml
   - mongodb-service.yaml
   - mongodb-statefulset.yaml

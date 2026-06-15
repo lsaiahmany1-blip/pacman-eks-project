@@ -46,14 +46,6 @@ spec:
           volumeMounts:
             - name: mongodb-data
               mountPath: /data/db
-  volumeClaimTemplates:
-    - metadata:
-        name: mongodb-data
-        labels:
-          app.kubernetes.io/name: mongodb
-      spec:
-        accessModes:
-          - ReadWriteOnce
-        resources:
-          requests:
-            storage: 8Gi
+      volumes:
+        - name: mongodb-data
+          emptyDir: {}
