@@ -1,180 +1,207 @@
 # Pac-Man on Amazon EKS Auto Mode
 
-Final DevOps project repository for deploying the open-source Pac-Man Node.js game to Amazon EKS Auto Mode with Amazon ECR, GitHub Actions CI/CD, a Network Load Balancer, and MongoDB persistent storage.
+## Project Overview
 
-Source application: [font/pacman](https://github.com/font/pacman)
+This project demonstrates a complete DevOps deployment workflow using AWS cloud services, Docker, Kubernetes, and GitHub.
+
+The goal was to deploy the open-source Pac-Man application to Amazon EKS Auto Mode, expose it to the internet through an AWS LoadBalancer, connect it to MongoDB, document the deployment process, and manage the infrastructure using Infrastructure as Code principles.
+
+The project was fully deployed, validated, documented, and later cleaned up to avoid unnecessary AWS costs.
+
+---
+
+## Technologies Used
+
+### Cloud
+
+- Amazon Web Services (AWS)
+- Amazon EKS Auto Mode
+- Amazon ECR
+- AWS IAM
+- AWS CloudFormation
+- AWS Load Balancer
+
+### Containers
+
+- Docker
+- Amazon Elastic Container Registry (ECR)
+
+### Kubernetes
+
+- Amazon EKS
+- Deployments
+- Services
+- StatefulSets
+- ConfigMaps
+- Storage Classes
+
+### Development Tools
+
+- Git
+- GitHub
+- GitHub Actions
+- eksctl
+- kubectl
+- AWS CLI
+- WSL Ubuntu
+
+---
 
 ## Architecture
 
-The deployment uses:
+1. Source code stored in GitHub.
+2. Docker image built from the application source code.
+3. Container image pushed to Amazon ECR.
+4. Amazon EKS Auto Mode cluster provisioned using eksctl.
+5. Kubernetes Deployment running two Pac-Man application replicas.
+6. MongoDB StatefulSet providing application persistence.
+7. AWS LoadBalancer exposing the application to the internet.
 
-- GitHub Actions to build the Docker image, push it to Amazon ECR, and deploy Kubernetes manifests.
-- Amazon ECR to store the Pac-Man container image.
-- EKS Auto Mode created with `eksctl`.
-- A Kubernetes `LoadBalancer` Service using an AWS Network Load Balancer.
-- MongoDB as a `StatefulSet`.
-- Persistent storage through a MongoDB `volumeClaimTemplates` PVC, dynamically backed by EKS Auto Mode block storage.
+---
 
-Open the architecture diagram in draw.io:
+## Deployment Process
 
-- `diagrams/architecture.drawio`
+### Step 1 – AWS Configuration
 
-## Repository Layout
+Configured AWS CLI using an IAM user and verified connectivity using:
 
-```text
-.
-├── .github/workflows/ci-cd.yml
-├── Dockerfile
-├── app.js
-├── bin/
-├── diagrams/architecture.drawio
-├── docs/CLEANUP.md
-├── docker/
-├── eksctl/cluster.yaml
-├── kubernetes/
-├── lib/
-├── public/
-├── routes/
-├── screenshots/README.md
-├── views/
-├── package.json
-└── README.md
-```
+\`\`\`bash
+aws sts get-caller-identity
+\`\`\`
 
-## Prerequisites
+### Step 2 – Create ECR Repository
 
-Install and configure these tools before deployment:
+Created an Amazon ECR repository for storing Docker images.
 
-- AWS CLI v2
-- `eksctl`
-- `kubectl`
-- Docker
-- GitHub repository with Actions enabled
-- AWS account permissions for EKS, EC2, IAM, ECR, CloudFormation, and Elastic Load Balancing
+### Step 3 – Build Docker Image
 
-This repository is prepared locally only. Do not create AWS resources until you intentionally run the deployment commands.
+Built the Pac-Man application container image locally.
 
-## Local Build Check
+### Step 4 – Push Image to ECR
 
-Build the container locally:
+Authenticated Docker against Amazon ECR and pushed the image successfully.
 
-```bash
-docker build -t pacman:local .
-```
+### Step 5 – Create EKS Cluster
 
-Optional local run with a local MongoDB instance:
+Created an Amazon EKS Auto Mode cluster using eksctl.
 
-```bash
-docker run --rm -p 8080:8080 \
-  -e MONGO_SERVICE_HOST=host.docker.internal \
-  -e MONGO_DATABASE=pacman \
-  pacman:local
-```
+### Step 6 – Configure Kubernetes
 
-Open `http://localhost:8080`.
+Applied Kubernetes manifests including:
 
-## Create the EKS Auto Mode Cluster
+- Namespace
+- Deployment
+- Service
+- StatefulSet
+- ConfigMap
 
-Ask for approval before running this because it creates paid AWS resources.
+### Step 7 – Deploy MongoDB
 
-```bash
-eksctl create cluster -f eksctl/cluster.yaml
-```
+Configured and deployed MongoDB using a StatefulSet.
 
-The `eksctl/cluster.yaml` file enables EKS Auto Mode with the default `general-purpose` and `system` node pools. AWS documentation states that `autoModeConfig.enabled: true` enables EKS-managed compute, load balancing, and block storage through the EKS API.
+### Step 8 – Expose Application
 
-## Create the ECR Repository
+Created a LoadBalancer Service and obtained a public endpoint.
 
-The GitHub Actions workflow can create the repository automatically. To create it manually:
+### Step 9 – Validation
 
-```bash
-aws ecr create-repository \
-  --repository-name pacman \
-  --region us-east-1 \
-  --image-scanning-configuration scanOnPush=true \
-  --encryption-configuration encryptionType=AES256
-```
+Verified:
 
-## Configure GitHub Actions
+- Nodes Ready
+- Pods Running
+- Services Available
+- MongoDB Running
+- Public Access Working
 
-Create an IAM role for GitHub OIDC with permission to push to ECR and deploy to EKS, then add this repository secret:
+### Step 10 – Cleanup
 
-- `AWS_ROLE_TO_ASSUME`: IAM role ARN for GitHub Actions
+Deleted all AWS resources after successful validation and documentation.
 
-Set these repository variables or keep the defaults:
+---
 
-- `AWS_REGION`: `us-east-1`
-- `ECR_REPOSITORY`: `pacman`
-- `EKS_CLUSTER_NAME`: `pacman-eks-auto`
+## Challenges Solved
 
-After the cluster exists and the role is configured, push to `main` or run the workflow manually.
+- AWS CLI authentication issues
+- Docker integration issues inside WSL
+- ECR authentication and image push problems
+- Kubernetes image reference errors
+- MongoDB storage configuration issues
+- EBS CSI Driver installation
+- Kubernetes scheduling problems
+- LoadBalancer validation
 
-## Manual Deployment Alternative
+---
 
-Use this only after the cluster and ECR repository exist.
+## Deployment Evidence
 
-```bash
-AWS_REGION=us-east-1
-AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-ECR_REPOSITORY=pacman
-IMAGE_TAG=manual
-IMAGE_URI="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG"
+Deployment screenshots are available in:
 
-aws ecr get-login-password --region "$AWS_REGION" | \
-  docker login --username AWS --password-stdin "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
+screenshots/
 
-docker build -t "$IMAGE_URI" .
-docker push "$IMAGE_URI"
+The screenshots document:
 
-aws eks update-kubeconfig --name pacman-eks-auto --region "$AWS_REGION"
-cp -R kubernetes rendered-kubernetes
-sed -i "s|IMAGE_URI_PLACEHOLDER|$IMAGE_URI|g" rendered-kubernetes/pacman-deployment.yaml
-kubectl apply -k rendered-kubernetes
-kubectl rollout status deployment/pacman -n pacman --timeout=180s
-```
+- Project structure
+- GitHub repository
+- AWS CLI authentication
+- ECR repository creation
+- Docker image push
+- CloudFormation deployment
+- EKS nodes
+- Kubernetes pods
+- Services and LoadBalancer
+- Running Pac-Man application
+- Kubernetes resources
+- EKS add-ons
 
-Get the public NLB hostname:
+---
 
-```bash
-kubectl get svc pacman -n pacman
-```
+## Project Results
 
-## Kubernetes Resources
+Successfully achieved:
 
-The manifests in `kubernetes/` create:
+- Docker containerization
+- AWS ECR integration
+- Amazon EKS deployment
+- Kubernetes orchestration
+- MongoDB deployment
+- Public application access
+- Infrastructure documentation
+- GitHub version control
+- AWS resource cleanup
 
-- `Namespace`: `pacman`
-- `ConfigMap`: MongoDB connection settings for the app
-- `Deployment`: Pac-Man web app with two replicas
-- `Service`: public Network Load Balancer on port `80`
-- `StatefulSet`: MongoDB
-- `Service`: internal MongoDB ClusterIP and headless service
-- `PersistentVolumeClaim`: generated by MongoDB `volumeClaimTemplates`
-
-## Verification Commands
-
-```bash
-kubectl get nodes
-kubectl get all -n pacman
-kubectl get statefulset,pvc,pv -n pacman
-kubectl get svc pacman -n pacman
-kubectl describe svc pacman -n pacman
-```
-
-## Screenshots
-
-Use `screenshots/README.md` as the exact checklist for the evidence screenshots required by the final project.
+---
 
 ## Cleanup
 
-Cleanup instructions are in:
+All AWS resources were removed after project completion to prevent ongoing charges.
 
-- `docs/CLEANUP.md`
+Resources deleted:
 
-Do not skip cleanup after grading or testing. EKS clusters, load balancers, NAT gateways, and EBS volumes can continue to generate AWS charges.
+- EKS Cluster
+- EBS CSI Add-on
+- Load Balancer
+- ECR Repository
 
-## References
+Verification was performed to confirm that no active EKS clusters or ECR repositories remained.
 
-- AWS EKS Auto Mode with `eksctl`: <https://docs.aws.amazon.com/eks/latest/eksctl/auto-mode.html>
-- EKS Auto Mode NLB Service annotations: <https://docs.aws.amazon.com/eks/latest/userguide/auto-configure-nlb.html>
-- Original Pac-Man source: <https://github.com/font/pacman>
+---
+
+## Repository Structure
+
+.github/
+docker/
+docs/
+eksctl/
+kubernetes/
+screenshots/
+diagrams/
+
+---
+
+## Author
+
+Isaiah Yarchi
+
+DevOps Final Project
+
+AWS • Docker • Kubernetes • GitHub • EKS • ECR
