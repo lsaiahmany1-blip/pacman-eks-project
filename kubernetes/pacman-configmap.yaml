@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pacman-config
+  namespace: pacman
+  labels:
+    app.kubernetes.io/name: pacman
+data:
+  MONGO_SERVICE_HOST: mongodb
+  MONGO_DATABASE: pacman
+  MY_MONGO_PORT: "27017"

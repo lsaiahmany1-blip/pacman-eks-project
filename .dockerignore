@@ -1,0 +1,14 @@
+.git
+.github
+diagrams
+docs
+eksctl
+kubernetes
+screenshots
+work
+outputs
+node_modules
+npm-debug.log
+Dockerfile
+.dockerignore
+README.md

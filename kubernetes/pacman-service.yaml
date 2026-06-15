@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pacman
+  namespace: pacman
+  labels:
+    app.kubernetes.io/name: pacman
+    app.kubernetes.io/component: web
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-protocol: HTTP
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-path: /
+    service.beta.kubernetes.io/aws-load-balancer-healthcheck-port: "8080"
+spec:
+  type: LoadBalancer
+  loadBalancerClass: eks.amazonaws.com/nlb
+  selector:
+    app.kubernetes.io/name: pacman
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP

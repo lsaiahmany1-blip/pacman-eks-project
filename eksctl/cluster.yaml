@@ -1,0 +1,31 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: pacman-eks-auto
+  region: us-east-1
+  version: "1.35"
+  tags:
+    project: pacman-eks-final
+    managed-by: eksctl
+
+autoModeConfig:
+  enabled: true
+  nodePools:
+    - general-purpose
+    - system
+
+iam:
+  withOIDC: true
+
+vpc:
+  cidr: 10.0.0.0/16
+  nat:
+    gateway: Single
+
+cloudWatch:
+  clusterLogging:
+    enableTypes:
+      - api
+      - audit
+      - authenticator
