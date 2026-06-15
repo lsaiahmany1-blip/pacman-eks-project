@@ -1,16 +1,54 @@
-# Screenshots to Capture
+# Project Screenshots
 
-Create one screenshot per item and save it in this folder with the suggested filename.
+These screenshots document the successful deployment of the Pac-Man application on Amazon EKS Auto Mode.
 
-1. `01-github-repository.png` - GitHub repository root showing source code, `Dockerfile`, `eksctl/`, `kubernetes/`, `.github/workflows/`, `diagrams/`, and `screenshots/`.
-2. `02-github-actions-success.png` - Successful GitHub Actions workflow run for `CI/CD`.
-3. `03-ecr-repository.png` - Amazon ECR repository named `pacman` with the pushed image tag.
-4. `04-eks-cluster-overview.png` - EKS cluster overview showing cluster name `pacman-eks-auto`.
-5. `05-eks-auto-mode.png` - EKS Auto Mode enabled view or cluster compute settings showing Auto Mode.
-6. `06-kubectl-pods.png` - Terminal output of `kubectl get pods -n pacman -o wide`.
-7. `07-kubectl-services.png` - Terminal output of `kubectl get svc -n pacman`, showing the external NLB hostname for the `pacman` service.
-8. `08-mongodb-statefulset.png` - Terminal output of `kubectl get statefulset,pvc,pv -n pacman`, showing MongoDB and persistent storage.
-9. `09-nlb-console.png` - AWS EC2 Load Balancers page showing the Network Load Balancer created by the Kubernetes Service.
-10. `10-pacman-browser.png` - Browser opened to the NLB DNS name showing the Pac-Man game.
-11. `11-cleanup-start.png` - Terminal showing cleanup commands before deletion, if your instructor requires cleanup evidence.
-12. `12-cleanup-complete.png` - Terminal or AWS console showing cluster/load balancer resources removed, if your instructor requires cleanup evidence.
+## 01-project-structure.png
+Shows the complete project structure including Docker configuration, Kubernetes manifests, EKS configuration, documentation, architecture diagrams, and application source code.
+
+## 04-github-project-uploaded.png
+Shows the GitHub repository containing the full project source code, infrastructure files, deployment manifests, and documentation.
+
+## 05-aws-cli-connected.png
+Shows successful AWS CLI authentication using the IAM user `devops-admin` and verification through the `aws sts get-caller-identity` command.
+
+## 06-ecr-repository-created.png
+Shows the Amazon Elastic Container Registry (ECR) repository created to store the Pac-Man Docker image.
+
+## 07-docker-push-to-ecr.png
+Shows the Docker image successfully pushed to Amazon ECR and ready for deployment to Amazon EKS.
+
+## 08-cloudformation-create-complete.png
+Shows the CloudFormation stack creation process completed successfully during EKS cluster provisioning.
+
+## 09-eks-nodes-ready.png
+Shows Amazon EKS worker nodes in the Ready state, confirming that the Kubernetes cluster is operational.
+
+## 10-pods-running.png
+Shows the Pac-Man application Pods and MongoDB Pod running successfully inside the Kubernetes cluster.
+
+## 11-services-loadbalancer.png
+Shows Kubernetes Services including the AWS LoadBalancer used to expose the application to the internet.
+
+## 12-pacman-running-browser.png
+Shows the Pac-Man application successfully accessed through the public AWS LoadBalancer endpoint.
+
+## 13-kubernetes-resources.png
+Shows all deployed Kubernetes resources including Pods, Services, Deployments, ReplicaSets, and StatefulSets.
+
+## 14-eks-and-ebs-addon-complete.png
+Shows successful creation of both the Amazon EKS cluster and the AWS EBS CSI Driver add-on through CloudFormation.
+
+## Project Summary
+
+This project demonstrates a complete DevOps workflow:
+
+- Source code management with GitHub
+- Containerization using Docker
+- Image management with Amazon ECR
+- Kubernetes deployment on Amazon EKS Auto Mode
+- Application exposure through AWS LoadBalancer
+- MongoDB StatefulSet deployment
+- Infrastructure management using eksctl
+- Validation, monitoring, and cleanup of AWS resources
+
+All AWS resources were deleted after successful validation to avoid unnecessary cloud costs.
