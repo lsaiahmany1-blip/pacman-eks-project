@@ -38,7 +38,7 @@ This removes pushed container images.
 
 ```bash
 aws ecr delete-repository \
-  --repository-name pacman \
+  --repository-name pacman-eks \
   --region us-east-1 \
   --force
 ```
