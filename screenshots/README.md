@@ -2,6 +2,21 @@
 
 These screenshots document the successful deployment of the Pac-Man application on Amazon EKS Auto Mode.
 
+The folder currently contains the following screenshot files:
+
+- `01-project-structure.png`
+- `04-github-project-uploaded.png`
+- `05-aws-cli-connected.png`
+- `06-ecr-repository-created.png`
+- `07-docker-push-to-ecr.png`
+- `08-cloudformation-create-complete.png`
+- `09-eks-nodes-ready.png`
+- `10-pods-running.png`
+- `11-services-loadbalancer.png`
+- `12-pacman-running-browser.png`
+- `13-kubernetes-resources.png`
+- `14-eks-and-ebs-addon-complete.png`
+
 ## 01-project-structure.png
 Shows the complete project structure including Docker configuration, Kubernetes manifests, EKS configuration, documentation, architecture diagrams, and application source code.
 
@@ -36,7 +51,7 @@ Shows the Pac-Man application successfully accessed through the public AWS LoadB
 Shows all deployed Kubernetes resources including Pods, Services, Deployments, ReplicaSets, and StatefulSets.
 
 ## 14-eks-and-ebs-addon-complete.png
-Shows successful creation of both the Amazon EKS cluster and the AWS EBS CSI Driver add-on through CloudFormation.
+Shows successful creation of both the Amazon EKS cluster and the AWS EBS CSI Driver add-on through CloudFormation. The current Kubernetes manifests do not use EBS-backed MongoDB persistence.
 
 ## Project Summary
 
@@ -47,7 +62,7 @@ This project demonstrates a complete DevOps workflow:
 - Image management with Amazon ECR
 - Kubernetes deployment on Amazon EKS Auto Mode
 - Application exposure through AWS LoadBalancer
-- MongoDB StatefulSet deployment
+- MongoDB StatefulSet deployment using `emptyDir` storage for demo data
 - Infrastructure management using eksctl
 - Validation, monitoring, and cleanup of AWS resources
 

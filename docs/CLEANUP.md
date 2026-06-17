@@ -15,16 +15,18 @@ kubectl get svc -n pacman
 aws elbv2 describe-load-balancers --region us-east-1
 ```
 
-## 2. Delete Persistent Volume Claims
+## 2. Verify MongoDB Storage Cleanup
 
-The MongoDB StatefulSet creates EBS-backed PersistentVolumes through its `volumeClaimTemplates`.
+The current MongoDB StatefulSet uses `emptyDir` storage. It does not create PersistentVolumeClaims or EBS-backed PersistentVolumes.
+
+After deleting the Kubernetes workloads, verify that no project PersistentVolumes or PersistentVolumeClaims remain:
 
 ```bash
-kubectl delete pvc -n pacman -l app.kubernetes.io/name=mongodb
+kubectl get pvc -n pacman
 kubectl get pv
 ```
 
-If any released PV remains because of a retention policy, inspect it before deleting it manually.
+If the MongoDB manifest is changed in the future to use EBS-backed PersistentVolumes, inspect any remaining PVs before deleting them manually.
 
 ## 3. Delete the EKS Cluster
 
