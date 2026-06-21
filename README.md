@@ -122,23 +122,34 @@ Deleted all AWS resources after successful validation and documentation.
 
 ---
 
-## GitHub Actions Workflow
+## CI/CD Pipeline
 
-The repository includes a GitHub Actions workflow at `.github/workflows/ci-cd.yml`.
+The repository includes a GitHub Actions CI/CD demonstration workflow at `.github/workflows/main.yml`.
 
-The workflow is configured to:
+The workflow runs automatically on every push to the `main` branch and can also be started manually from the GitHub Actions tab.
+
+The current workflow demonstrates CI/CD concepts without requiring active AWS resources, AWS credentials, GitHub Secrets, Amazon ECR, or an Amazon EKS cluster.
+
+The pipeline performs the following steps:
 
 - Install Node.js dependencies.
-- Authenticate to AWS using OIDC.
-- Log in to Amazon ECR.
-- Create the ECR repository if it does not already exist.
-- Build and push a Docker image tagged with the Git commit SHA.
-- Connect to the configured EKS cluster.
-- Run `kubectl apply -k` against a rendered copy of the Kubernetes manifests.
+- Verify the expected repository structure.
+- Build a Docker image locally using the project `Dockerfile`.
+- Simulate a deployment step with clear logging output.
 
-Current consistency note: the workflow tries to replace `IMAGE_URI_PLACEHOLDER` in `kubernetes/pacman-deployment.yaml`, but the current Deployment manifest uses a hard-coded ECR image reference instead of that placeholder. Because of that, the workflow should be treated as a supporting CI/CD example unless the image replacement is aligned with the manifest.
+The deployment simulation represents the CD stage of the pipeline. It prints the image tag that would be promoted and explains the production deployment steps without connecting to AWS.
 
-The deployment documented in the screenshots was validated manually through AWS, Docker, ECR, eksctl, and kubectl.
+A production version of this workflow could be extended to:
+
+- Authenticate to AWS using GitHub OIDC.
+- Push the Docker image to Amazon ECR.
+- Update the Pac-Man Kubernetes Deployment image.
+- Apply the Kubernetes manifests to Amazon EKS.
+- Wait for the deployment rollout to complete.
+
+The repository also keeps `.github/workflows/ci-cd.yml` as a manual AWS deployment reference workflow. It is not triggered automatically on push, so the main CI/CD demonstration can run successfully without AWS configuration.
+
+The deployment documented in the screenshots was validated through AWS, Docker, ECR, eksctl, and kubectl.
 
 ---
 

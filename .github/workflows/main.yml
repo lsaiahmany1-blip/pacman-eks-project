@@ -1,0 +1,70 @@
+name: CI/CD Demonstration
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ci-cd-demo:
+    name: Build and Deployment Simulation
+    runs-on: ubuntu-latest
+
+    steps:
+      # CI step: pull the latest repository content into the GitHub Actions runner.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # CI step: verify that the expected project folders and files are present.
+      - name: Verify repository structure
+        run: |
+          echo "Checking required project files and folders..."
+          test -f README.md
+          test -f Dockerfile
+          test -f package.json
+          test -d kubernetes
+          test -d eksctl
+          test -d screenshots
+          test -f kubernetes/pacman-deployment.yaml
+          test -f kubernetes/pacman-service.yaml
+          test -f kubernetes/mongodb-statefulset.yaml
+          echo "Repository structure verification completed successfully."
+
+      # CI step: install a known Node.js version for dependency installation.
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # CI step: install Node.js dependencies when package.json exists.
+      - name: Install Node.js dependencies
+        if: ${{ hashFiles('package.json') != '' }}
+        run: |
+          echo "package.json found. Installing dependencies..."
+          npm install
+          echo "Dependency installation completed successfully."
+
+      # CI step: build the application container image locally.
+      - name: Build Docker image
+        run: |
+          echo "Building Docker image locally for validation..."
+          docker build -t pacman-eks-project:${{ github.sha }} .
+          echo "Docker image build completed successfully."
+
+      # CD simulation step: demonstrate deployment flow without connecting to AWS.
+      - name: Simulate deployment
+        run: |
+          echo "Starting CD simulation..."
+          echo "Image that would be promoted: pacman-eks-project:${{ github.sha }}"
+          echo "In a production pipeline, this stage would:"
+          echo "1. Authenticate to AWS using GitHub OIDC."
+          echo "2. Push the Docker image to Amazon ECR."
+          echo "3. Update the Pac-Man Kubernetes Deployment image."
+          echo "4. Apply manifests to Amazon EKS."
+          echo "5. Wait for kubectl rollout status to complete."
+          echo "No AWS resources are used by this demonstration workflow."
+          echo "CD simulation completed successfully."

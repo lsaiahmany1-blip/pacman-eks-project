@@ -1,9 +1,9 @@
 name: CI/CD
 
 on:
-  push:
-    branches:
-      - main
+  # This AWS deployment workflow is kept as a production reference and is not
+  # triggered automatically. The active no-AWS demonstration workflow is
+  # .github/workflows/main.yml.
   workflow_dispatch:
 
 permissions:
